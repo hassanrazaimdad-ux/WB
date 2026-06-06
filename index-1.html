@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- ✅ PWA Manifest - real file, detectable by PWABuilder -->
+  <link rel="manifest" href="/manifest.json" />
+
+  <!-- Theme & app meta -->
+  <meta name="theme-color" content="#0a3d62" />
+  <meta name="description" content="Wali Bhai Pharmacy – AI Receptionist for Dr. Fahad Zain's Psychiatric Clinic. Ask about medicines, appointments, and timings." />
+  <meta name="keywords" content="pharmacy, psychiatrist, Dr Fahad Zain, Wali Bhai, medicine, appointment" />
+
+  <!-- Apple PWA -->
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Wali Bhai" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-96.png" />
+  <link rel="shortcut icon" href="/icons/icon-96.png" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="Wali Bhai Pharmacy" />
+  <meta property="og:description" content="AI Receptionist – Dr. Fahad Zain's Psychiatric Clinic" />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="/icons/icon-512.png" />
+
+  <title>Wali Bhai Pharmacy</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --navy: #0a3d62;
+      --navy-deep: #061f35;
+      --teal: #0d6e8a;
+      --teal-light: #0f8aaa;
+      --gold: #e8b84b;
+      --gold-dim: #c9952e;
+      --white: #f9f9f7;
+      --off-white: #d4dde5;
+      --muted: #7a9ab0;
+      --card-bg: rgba(255,255,255,0.05);
+      --border: rgba(255,255,255,0.09);
+      --danger: #e74c3c;
+      --success: #2ecc71;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0; padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: var(--navy-deep);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── ANIMATED BACKGROUND ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 90% 70% at 15% 5%, rgba(13,110,138,0.4) 0%, transparent 55%),
+        radial-gradient(ellipse 60% 50% at 85% 85%, rgba(232,184,75,0.10) 0%, transparent 50%),
+        radial-gradient(ellipse 110% 90% at 50% 50%, rgba(10,61,98,0.95) 0%, var(--navy-deep) 100%);
+      pointer-events: none;
+    }
+
+    /* ── GRAIN OVERLAY ── */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    /* ── LAYOUT ── */
+    #app {
+      position: relative; z-index: 1;
+      height: 100vh;
+      display: flex; flex-direction: column;
+      max-width: 480px; margin: 0 auto;
+    }
+
+    /* ── HEADER ── */
+    header {
+      padding: 16px 18px 13px;
+      display: flex; align-items: center; gap: 12px;
+      background: rgba(6,31,53,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .logo-wrap {
+      position: relative; flex-shrink: 0;
+    }
+    .logo-circle {
+      width: 44px; height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(145deg, var(--teal), var(--navy));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      border: 1.5px solid rgba(232,184,75,0.6);
+      box-shadow: 0 0 20px rgba(232,184,75,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .online-dot {
+      position: absolute; bottom: -2px; right: -2px;
+      width: 11px; height: 11px;
+      background: var(--success);
+      border-radius: 50%;
+      border: 2px solid var(--navy-deep);
+      animation: pulseDot 2.5s infinite;
+    }
+    @keyframes pulseDot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(46,204,113,0.5); }
+      50% { box-shadow: 0 0 0 5px rgba(46,204,113,0); }
+    }
+
+    .header-info { flex: 1; min-width: 0; }
+    .header-info h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 700;
+      color: var(--white);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .header-info p {
+      font-size: 10.5px; color: var(--gold);
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .owner-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px; padding: 7px 13px;
+      border-radius: 20px; cursor: pointer;
+      transition: all 0.2s; flex-shrink: 0;
+      white-space: nowrap;
+    }
+    .owner-btn:hover { border-color: var(--gold); color: var(--gold); background: rgba(232,184,75,0.08); }
+
+    /* ── CHAT AREA ── */
+    #chat {
+      flex: 1; overflow-y: auto;
+      padding: 16px 14px 8px;
+      display: flex; flex-direction: column; gap: 12px;
+      scroll-behavior: smooth;
+    }
+    #chat::-webkit-scrollbar { width: 3px; }
+    #chat::-webkit-scrollbar-track { background: transparent; }
+    #chat::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* ── WELCOME CARD ── */
+    .welcome-card {
+      background: linear-gradient(135deg, rgba(13,110,138,0.25), rgba(10,61,98,0.4));
+      border: 1px solid rgba(13,110,138,0.35);
+      border-radius: 20px; padding: 20px 18px;
+      text-align: center;
+      animation: fadeUp 0.5s ease both;
+    }
+    .welcome-icon { font-size: 38px; margin-bottom: 10px; }
+    .welcome-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 18px; color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .welcome-card p { font-size: 13px; color: var(--off-white); line-height: 1.65; }
+
+    /* ── MESSAGES ── */
+    .msg {
+      display: flex; flex-direction: column;
+      animation: fadeUp 0.28s ease both;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .msg.user { align-items: flex-end; }
+    .msg.ai   { align-items: flex-start; }
+
+    .ai-row { display: flex; align-items: flex-end; gap: 8px; }
+
+    .ai-avatar {
+      width: 30px; height: 30px; flex-shrink: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--teal), var(--navy));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      border: 1px solid rgba(232,184,75,0.4);
+    }
+
+    .bubble {
+      max-width: 80%; padding: 11px 15px;
+      border-radius: 18px;
+      font-size: 14px; line-height: 1.65;
+    }
+    .msg.user .bubble {
+      background: linear-gradient(135deg, var(--teal), #0a5570);
+      color: var(--white);
+      border-bottom-right-radius: 4px;
+    }
+    .msg.ai .bubble {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      color: var(--white);
+      border-bottom-left-radius: 4px;
+      backdrop-filter: blur(6px);
+    }
+
+    .msg-time { font-size: 10px; color: var(--muted); margin-top: 4px; padding: 0 4px; }
+
+    /* ── TYPING ── */
+    .typing-row { display: none; align-items: flex-end; gap: 8px; }
+    .typing-row.visible { display: flex; }
+    .typing-bubble {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 18px; border-bottom-left-radius: 4px;
+      padding: 13px 17px;
+      display: flex; gap: 5px; align-items: center;
+    }
+    .typing-bubble span {
+      width: 6px; height: 6px;
+      background: var(--muted); border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+    .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%,60%,100% { transform: translateY(0); opacity: 0.4; }
+      30% { transform: translateY(-7px); opacity: 1; }
+    }
+
+    /* ── QUICK REPLIES ── */
+    #quickReplies {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      padding: 4px 14px 10px; flex-shrink: 0;
+    }
+    .chip {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--off-white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; padding: 7px 14px;
+      border-radius: 20px; cursor: pointer;
+      transition: all 0.18s; white-space: nowrap;
+    }
+    .chip:hover, .chip:active { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+    /* ── INPUT BAR ── */
+    .input-bar {
+      padding: 10px 14px 24px;
+      display: flex; gap: 9px; align-items: center;
+      background: rgba(6,31,53,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    #userInput {
+      flex: 1;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 22px; padding: 11px 17px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; outline: none;
+      transition: border-color 0.2s;
+    }
+    #userInput::placeholder { color: var(--muted); }
+    #userInput:focus { border-color: var(--teal); }
+
+    #sendBtn {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 16px rgba(232,184,75,0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    #sendBtn:hover { transform: scale(1.07); box-shadow: 0 6px 22px rgba(232,184,75,0.5); }
+    #sendBtn:active { transform: scale(0.94); }
+
+    /* ── OFFLINE BANNER ── */
+    #offlineBanner {
+      display: none; text-align: center;
+      background: rgba(231,76,60,0.15);
+      border-bottom: 1px solid rgba(231,76,60,0.3);
+      padding: 7px; font-size: 12px; color: #e74c3c;
+      flex-shrink: 0;
+    }
+    #offlineBanner.visible { display: block; }
+
+    /* ── MODAL OVERLAY ── */
+    #ownerModal {
+      position: fixed; inset: 0; z-index: 200;
+      display: none; align-items: flex-end;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    #ownerModal.open { display: flex; }
+
+    .sheet {
+      background: linear-gradient(180deg, #0d2a45 0%, var(--navy-deep) 100%);
+      border: 1px solid var(--border);
+      border-bottom: none;
+      border-radius: 26px 26px 0 0;
+      width: 100%; max-width: 480px; margin: 0 auto;
+      padding: 24px 22px 38px;
+      animation: sheetUp 0.3s cubic-bezier(0.34,1.2,0.64,1);
+    }
+    @keyframes sheetUp {
+      from { transform: translateY(100%); }
+      to   { transform: translateY(0); }
+    }
+
+    .sheet-handle {
+      width: 38px; height: 4px;
+      background: var(--border); border-radius: 2px;
+      margin: 0 auto 22px;
+    }
+    .sheet-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--gold); margin-bottom: 18px;
+    }
+
+    /* Login */
+    .field {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--border);
+      border-radius: 13px; padding: 13px 17px;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px; outline: none; width: 100%;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+    .field:focus { border-color: var(--gold); }
+    .field::placeholder { color: var(--muted); }
+
+    .err-msg { font-size: 12px; color: var(--danger); margin-bottom: 10px; display: none; }
+    .err-msg.visible { display: block; }
+
+    .btn-primary {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: var(--navy-deep); font-weight: 600;
+      font-family: 'DM Sans', sans-serif; font-size: 15px;
+      border: none; border-radius: 13px; cursor: pointer;
+      transition: opacity 0.2s; margin-bottom: 10px;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+
+    .btn-ghost {
+      width: 100%; padding: 13px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted); font-family: 'DM Sans', sans-serif;
+      font-size: 14px; border-radius: 13px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--muted); color: var(--white); }
+
+    /* Dashboard */
+    #dashboard { display: none; flex-direction: column; gap: 12px; }
+    #dashboard.show { display: flex; }
+
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 14px 16px;
+      display: flex; align-items: center; gap: 14px;
+    }
+    .stat-icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .stat-value { font-size: 20px; font-weight: 500; color: var(--white); margin-top: 3px; }
+    .stat-value.small { font-size: 14px; margin-top: 4px; line-height: 1.4; }
+
+    .divider { height: 1px; background: var(--border); margin: 4px 0; }
+  </style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- OFFLINE BANNER -->
+  <div id="offlineBanner">⚠️ Offline mode – messages may not send</div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo-wrap">
+      <div class="logo-circle">💊</div>
+      <div class="online-dot" id="onlineDot"></div>
+    </div>
+    <div class="header-info">
+      <h1>Wali Bhai Pharmacy</h1>
+      <p>Dr. Fahad Zain · Psychiatric Clinic</p>
+    </div>
+    <button class="owner-btn" onclick="openModal()">⚙️ Owner</button>
+  </header>
+
+  <!-- CHAT -->
+  <div id="chat">
+    <div class="welcome-card">
+      <div class="welcome-icon">🏥</div>
+      <h2>Assalam o Alaikum!</h2>
+      <p>Wali Bhai Pharmacy mein khush aamdeed. Dawa, appointment, ya clinic timing ke baare mein poochhein.</p>
+    </div>
+
+    <div class="msg ai">
+      <div class="ai-row">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="bubble">Aap ka swagat hai! Main Wali AI hoon. Aap mujhse dawa, appointment, ya Dr. Fahad Zain ke baare mein kuch bhi pooch sakte hain. 😊</div>
+          <div class="msg-time" id="initTime"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typing indicator -->
+    <div class="typing-row" id="typingRow">
+      <div class="ai-avatar">🤖</div>
+      <div class="typing-bubble"><span></span><span></span><span></span></div>
+    </div>
+  </div>
+
+  <!-- QUICK REPLIES -->
+  <div id="quickReplies">
+    <button class="chip" onclick="quickSend('Clinic ki timing kya hai?')">🕐 Timing</button>
+    <button class="chip" onclick="quickSend('Appointment kaise lein?')">📅 Appointment</button>
+    <button class="chip" onclick="quickSend('Dr. Fahad Zain kaun hain?')">👨‍⚕️ Doctor</button>
+    <button class="chip" onclick="quickSend('Psychiatric medicines milti hain?')">💊 Medicines</button>
+    <button class="chip" onclick="quickSend('Pharmacy ka address kya hai?')">📍 Address</button>
+  </div>
+
+  <!-- INPUT BAR -->
+  <div class="input-bar">
+    <input
+      type="text" id="userInput"
+      placeholder="Apna sawal likhein..."
+      onkeydown="onKey(event)"
+      autocomplete="off" autocorrect="off"
+    />
+    <button id="sendBtn" onclick="sendMsg()" aria-label="Send">➤</button>
+  </div>
+</div>
+
+<!-- OWNER MODAL -->
+<div id="ownerModal" onclick="backdropClose(event)">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+
+    <!-- LOGIN -->
+    <div id="loginPanel">
+      <div class="sheet-title">🔐 Owner Login</div>
+      <input type="password" class="field" id="pwdInput"
+        placeholder="Enter owner password"
+        onkeydown="if(event.key==='Enter') doLogin()" />
+      <div class="err-msg" id="loginErr">❌ Incorrect password. Try again.</div>
+      <button class="btn-primary" onclick="doLogin()">Login</button>
+      <button class="btn-ghost" onclick="closeModal()">Cancel</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboard">
+      <div class="sheet-title">📊 Owner Dashboard</div>
+      <div class="stat-card">
+        <div class="stat-icon">💬</div>
+        <div>
+          <div class="stat-label">Messages Today</div>
+          <div class="stat-value" id="dMsgs">0</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🙋</div>
+        <div>
+          <div class="stat-label">Patient Queries</div>
+          <div class="stat-value" id="dQueries">0</div>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="stat-card">
+        <div class="stat-icon">🏥</div>
+        <div>
+          <div class="stat-label">Pharmacy</div>
+          <div class="stat-value small">Wali Bhai Pharmacy</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">👨‍⚕️</div>
+        <div>
+          <div class="stat-label">Psychiatrist</div>
+          <div class="stat-value small">Dr. Fahad Zain</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🕐</div>
+        <div>
+          <div class="stat-label">Clinic Hours</div>
+          <div class="stat-value small">Mon–Sat · 9AM – 8PM</div>
+        </div>
+      </div>
+      <button class="btn-ghost" onclick="doLogout()" style="margin-top:6px">🚪 Logout</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ════════════════════════════════════════════════
+  // CONFIG — update these two values before deploy
+  // ════════════════════════════════════════════════
+  // ⚠️ HASSAN — ONLY CHANGE THIS ONE LINE — paste your Railway URL below:
+  const RAILWAY_URL   = "https://PASTE-YOUR-RAILWAY-URL-HERE.railway.app";
+  const OWNER_PASS    = "WaliBhai@786";   // Owner dashboard password — memorize this
+
+  const SYSTEM_PROMPT = `You are Wali AI, the friendly AI receptionist for Wali Bhai Pharmacy, a psychiatric clinic run by Dr. Fahad Zain in Pakistan.
+Speak in warm Hinglish (mix of Urdu and English) unless the user writes in pure English, then reply in English.
+You help with:
+- Clinic timings: Monday to Saturday, 9 AM to 8 PM
+- Appointments: patients can walk in or call the pharmacy
+- Dr. Fahad Zain info: MBBS psychiatrist specializing in anxiety, depression, OCD, schizophrenia, bipolar disorder
+- General medicine queries for psychiatric medications (never give specific doses; advise consulting Dr. Fahad Zain)
+- Pharmacy location and stock (tell them to call for stock availability)
+Be empathetic, concise, and professional. Never diagnose or prescribe. Always recommend consulting Dr. Fahad Zain for clinical decisions.`;
+
+  // ════════════════════════════════════════════════
+  // STATE
+  // ════════════════════════════════════════════════
+  let history  = [];
+  let msgCount = 0;
+  let userMsgs = 0;
+
+  // ════════════════════════════════════════════════
+  // INIT
+  // ════════════════════════════════════════════════
+  document.getElementById('initTime').textContent = now();
+  registerSW();
+  watchOnline();
+
+  // ── Service Worker Registration ──────────────────
+  function registerSW() {
+    if (!('serviceWorker' in navigator)) return;
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('[SW] registered', reg.scope))
+      .catch(err => console.warn('[SW] failed:', err));
+  }
+
+  // ── Online/Offline detection ─────────────────────
+  function watchOnline() {
+    const update = () => {
+      const offline = !navigator.onLine;
+      document.getElementById('offlineBanner').classList.toggle('visible', offline);
+      document.getElementById('onlineDot').style.background = offline ? '#e74c3c' : '#2ecc71';
+    };
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    update();
+  }
+
+  // ════════════════════════════════════════════════
+  // HELPERS
+  // ════════════════════════════════════════════════
+  function now() {
+    return new Date().toLocaleTimeString('en-PK', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function esc(t) {
+    return t
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/\n/g,'<br>');
+  }
+
+  function scrollEnd() {
+    const c = document.getElementById('chat');
+    setTimeout(() => c.scrollTop = c.scrollHeight, 60);
+  }
+
+  function onKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+  }
+
+  function quickSend(text) {
+    document.getElementById('userInput').value = text;
+    sendMsg();
+  }
+
+  // ════════════════════════════════════════════════
+  // APPEND MESSAGE
+  // ════════════════════════════════════════════════
+  function addMsg(role, text) {
+    const chat = document.getElementById('chat');
+    const typing = document.getElementById('typingRow');
+    const div = document.createElement('div');
+    div.className = `msg ${role}`;
+    const t = now();
+
+    if (role === 'ai') {
+      div.innerHTML = `
+        <div class="ai-row">
+          <div class="ai-avatar">🤖</div>
+          <div>
+            <div class="bubble">${esc(text)}</div>
+            <div class="msg-time">${t}</div>
+          </div>
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <div class="bubble">${esc(text)}</div>
+        <div class="msg-time">${t}</div>`;
+    }
+
+    chat.insertBefore(div, typing);
+    scrollEnd();
+  }
+
+  // ════════════════════════════════════════════════
+  // SEND MESSAGE
+  // ════════════════════════════════════════════════
+  async function sendMsg() {
+    const input = document.getElementById('userInput');
+    const text  = input.value.trim();
+    if (!text) return;
+
+    input.value = '';
+    document.getElementById('quickReplies').style.display = 'none';
+    document.getElementById('sendBtn').disabled = true;
+
+    addMsg('user', text);
+    msgCount++; userMsgs++;
+    history.push({ role: 'user', content: text });
+
+    document.getElementById('typingRow').classList.add('visible');
+    scrollEnd();
+
+    try {
+      const res = await fetch(`${RAILWAY_URL}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history, system: SYSTEM_PROMPT })
+      });
+
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      const reply =
+        data.reply    ||
+        data.message  ||
+        data.content  ||
+        (Array.isArray(data.content) && data.content[0]?.text) ||
+        'Maafi chahta hoon, jawab nahi mil saka. Thodi der baad try karein.';
+
+      history.push({ role: 'assistant', content: reply });
+      document.getElementById('typingRow').classList.remove('visible');
+      addMsg('ai', reply);
+      msgCount++;
+
+    } catch (err) {
+      document.getElementById('typingRow').classList.remove('visible');
+      addMsg('ai', '⚠️ Server se connection nahi ho raha. Apna internet check karein ya direct clinic call karein.');
+    }
+
+    document.getElementById('sendBtn').disabled = false;
+  }
+
+  // ════════════════════════════════════════════════
+  // OWNER MODAL
+  // ════════════════════════════════════════════════
+  function openModal() {
+    document.getElementById('ownerModal').classList.add('open');
+    document.getElementById('loginPanel').style.display = 'block';
+    document.getElementById('dashboard').classList.remove('show');
+    document.getElementById('pwdInput').value = '';
+    document.getElementById('loginErr').classList.remove('visible');
+    setTimeout(() => document.getElementById('pwdInput').focus(), 300);
+  }
+
+  function closeModal() {
+    document.getElementById('ownerModal').classList.remove('open');
+  }
+
+  function backdropClose(e) {
+    if (e.target === document.getElementById('ownerModal')) closeModal();
+  }
+
+  function doLogin() {
+    if (document.getElementById('pwdInput').value === OWNER_PASS) {
+      document.getElementById('loginPanel').style.display = 'none';
+      document.getElementById('dMsgs').textContent    = msgCount;
+      document.getElementById('dQueries').textContent = userMsgs;
+      document.getElementById('dashboard').classList.add('show');
+    } else {
+      document.getElementById('loginErr').classList.add('visible');
+      document.getElementById('pwdInput').value = '';
+    }
+  }
+
+  function doLogout() {
+    document.getElementById('dashboard').classList.remove('show');
+    document.getElementById('loginPanel').style.display = 'block';
+    document.getElementById('pwdInput').value = '';
+  }
+</script>
+
+</body>
+</html>
